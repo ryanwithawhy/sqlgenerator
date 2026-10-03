@@ -1,33 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://sqlgenerator.io/</loc>
+    <loc>https://sqlgenerator.dev/</loc>
     <priority>1.0</priority>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://sqlgenerator.io/sql-in-clause-generator</loc>
+    <loc>https://sqlgenerator.dev/sql-in-clause-generator</loc>
     <priority>0.8</priority>
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://sqlgenerator.io/sql-converter/excel-to-sql</loc>
+    <loc>https://sqlgenerator.dev/sql-converter/excel-to-sql</loc>
     <priority>1</priority>
     <changefreq>weekly</changefreq>
   </url>
   <url>
-  <url>
-    <loc>https://sqlgenerator.io/sql-converter/csv-to-sql</loc>
+    <loc>https://sqlgenerator.dev/sql-converter/csv-to-sql</loc>
     <priority>1</priority>
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://sqlgenerator.io/sql-converter/json-to-sql</loc>
+    <loc>https://sqlgenerator.dev/sql-converter/json-to-sql</loc>
     <priority>0.8</priority>
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://sqlgenerator.io/sql-statement-generator/alter-statements</loc>
+    <loc>https://sqlgenerator.dev/sql-statement-generator/alter-statements</loc>
     <priority>0.8</priority>
     <changefreq>weekly</changefreq>
   </url>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import { TextField, Button, Box, Tabs, Tab, Container, Typography, Grid, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import sqlGenerator from '../utils/sqlGenerator';
-import { Link } from "react-router-dom";
+import Notice from '../components/Notice';
 const { generateInClausesFromPaste, generateFullInClause  } = sqlGenerator;
 
 function InClauseGenerator() {
@@ -171,10 +171,7 @@ function InClauseGenerator() {
             Generate
         </Button>
       </Grid>
-      <Typography variant='body1' sx={{mt: '16px'}}>
-      Note: All operations are performed client-side. No data is sent to a server so your data remains private and secure.
-      Checkout the <Link to="https://github.com/ryanwith/sqlgenerator">github repository</Link> if you want to verify or contribute.
-    </Typography>
+      <Notice />
     </Container>
   );
 }

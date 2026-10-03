@@ -23,7 +23,7 @@ const Home = () => {
       </Typography>
       <Typography variant="body1">
         All operations are performed client-side so your data never leaves your computer.  Additionally, this is open source so feel free to clone the&nbsp;
-        <a href='https://github.com/ryanwaldorf/sqlgenerator'>GitHub repository</a> and host it yourself.
+        <a href='https://github.com/ryanwithawhy/sqlgenerator'>GitHub repository</a> and host it yourself.
       </Typography>
     </Container>
   );
