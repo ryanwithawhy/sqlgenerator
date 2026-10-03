@@ -30,7 +30,8 @@ function TableGenerator({ title, description, fileType }) {
       index,
       name: field,
       type: 'VARCHAR',
-      include: true
+      include: true,
+      quote: true
     }));
     setFields(fields);
     setDisableButtons(false);
@@ -54,9 +55,9 @@ function TableGenerator({ title, description, fileType }) {
     setFields(newFields);
   };
 
-  const handleIncludeChange = (index) => {
+  const handleCheckboxChange = (index, field) => {
     const newFields = [...fields];
-    newFields[index].include = !newFields[index].include;
+    newFields[index][field] = !newFields[index][field];
     setFields(newFields);
   };
 
@@ -161,6 +162,7 @@ return (
                     <TableCell>Column Name</TableCell>
                     <TableCell>Column Type</TableCell>
                     <TableCell>Include</TableCell>
+                    <TableCell>Quote Values</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -182,7 +184,13 @@ return (
                       <TableCell>
                         <Checkbox
                           checked={field.include}
-                          onChange={() => handleIncludeChange(index)}
+                          onChange={() => handleCheckboxChange(index, 'include')}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Checkbox
+                          checked={field.quote}
+                          onChange={() => handleCheckboxChange(index, 'quote')}
                         />
                       </TableCell>
                     </TableRow>

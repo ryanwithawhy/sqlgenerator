@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
-import { TextField, Button, Box, Tabs, Tab, Container, Typography, Grid, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { TextField, Button, Box, Tabs, Tab, Container, Typography, Grid, FormControl, FormControlLabel, InputLabel, Select, MenuItem, Checkbox } from '@mui/material';
 import sqlGenerator from '../utils/sqlGenerator';
 import Notice from '../components/Notice';
 const { generateInClausesFromPaste, generateFullInClause  } = sqlGenerator;
@@ -11,6 +11,7 @@ function InClauseGenerator() {
   const [inClause, setInClause] = useState('');
   const [columnName, setColumnName] = useState('column_name');
   const [delimiter, setDelimiter] = useState('"');
+  const [quoteValues, setQuoteValues] = useState(true);
   const [notIn, setNotIn] = useState(false);
   const [batchSize, setBatchSize] = useState(0);
   const [currentTab, setCurrentTab] = useState(0); // 0 for Pasted Data, 1 for In Clause
@@ -34,17 +35,17 @@ function InClauseGenerator() {
     const sheet = XLSX.utils.aoa_to_sheet(rows);
     const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
     setParsedData(jsonData);
-    setUnformattedClauses(generateInClausesFromPaste(jsonData, batchSize));
+    setUnformattedClauses(generateInClausesFromPaste(jsonData, batchSize, quoteValues));
     setInClause(generateFullInClause(unformattedClauses, notIn, columnName, delimiter));
     setCurrentTab(1);
   };
 
   useEffect(() => {
     if (parsedData.length !== 0) {
-      const clauses = generateInClausesFromPaste(parsedData, batchSize);
+      const clauses = generateInClausesFromPaste(parsedData, batchSize, quoteValues);
       setUnformattedClauses(clauses);
     }
-  }, [parsedData, batchSize]);
+  }, [parsedData, batchSize, quoteValues]);
 
   useEffect(() => {
     if (unformattedClauses.length !== 0) {
@@ -171,6 +172,19 @@ function InClauseGenerator() {
                   onChange={handleSQLCriteriaChange}
                 />
               </FormControl>
+            </Grid>
+            <Grid item sm={3} xs={12}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    id="quote-values"
+                    name='quoteValues'
+                    checked={quoteValues}
+                    onChange={() => setQuoteValues(!quoteValues)}
+                  />
+                }
+                label="Quote Values"
+              />
             </Grid>
           </Grid>
         </Box>

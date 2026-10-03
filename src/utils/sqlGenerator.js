@@ -1,3 +1,12 @@
+// unquoted values emit NULL rather than an empty string, since a bare empty
+// value is a syntax error.
+const formatValue = (value, unquoted) => {
+  if (unquoted) {
+    return value === '' ? 'NULL' : `${value}`;
+  }
+  return `'${value}'`;
+}
+
 const generateCreateAndInsertStatements = (data, fields, tableName, tableType, batchSize, delimiter = '"') => {
   return [
     generateCreateTableSQL(fields, tableName, tableType, delimiter),
@@ -5,8 +14,8 @@ const generateCreateAndInsertStatements = (data, fields, tableName, tableType, b
   ].flat()
 }
 
-const generateInClausesFromPaste = (jsonData, batchSize = null) => {
-  const formattedItems = jsonData.flat().map((item) => `'${item}'`);
+const generateInClausesFromPaste = (jsonData, batchSize = null, quoteValues = true) => {
+  const formattedItems = jsonData.flat().map((item) => formatValue(item, !quoteValues));
   let chunkedDataPoints = []
   if(validBatchSize(batchSize) && batchSize > 0){
     chunkedDataPoints = [...breakIntoChunks(formattedItems, batchSize)]
@@ -52,9 +61,14 @@ const generateInsertStatements = (data, fields, tableName, batchSize, delimiter 
   console.log(rows)
   // removes fields where index != true
   const includedFieldIndexes = fields.map((field, index) => field.include === true ? index : null).filter((index) => index !== null);
+  // columns the user unchecked "Quote" on.  an undefined quote means quote it, so
+  // callers that predate this option keep their existing behavior.
+  const unquotedFieldIndexes = fields
+    .map((field, index) => field.quote === false ? index : null)
+    .filter((index) => index !== null);
   const insertIntoClause = generateInsertIntoClause(tableName, delimiter);
   const insertStatements = rows.map((row, rowNumber) => {
-    return generateInsertLine(insertIntoClause, includedFieldIndexes, row, rows.length, rowNumber, batchSize)
+    return generateInsertLine(insertIntoClause, includedFieldIndexes, row, rows.length, rowNumber, batchSize, unquotedFieldIndexes)
   });
   return insertStatements.join('');
 };
@@ -67,26 +81,27 @@ const generateInsertIntoClause = (tableName, delimiter = '"') => {
   return `\n\nINSERT INTO ${delimiter}${tableName}${delimiter} VALUES`
 }
 
-const generateInsertLine = (insertIntoClause, includedFieldIndexes, row, totalRows, rowNumber, batchSize) => {
+const generateInsertLine = (insertIntoClause, includedFieldIndexes, row, totalRows, rowNumber, batchSize, unquotedFieldIndexes = []) => {
 
   const beginningOfStatement = isFirstLineOfStatement(rowNumber, batchSize) ? insertIntoClause : '';
-  
+
   let values = [];
   for (let index = 0; index < row.length; index++) {
 
     // this mechanism ensures empty array values at the beginning of the string are included
     if (includedFieldIndexes.includes(index)) {
-      // 
+      //
       const value = row[index] === undefined ? '' : row[index];
-      values.push(`'${value}'`);
+      values.push(formatValue(value, unquotedFieldIndexes.includes(index)));
     }
   }
 
   // ensures trailing empty values are included
   if(values.length !== includedFieldIndexes.length){
-    for(let index = 0; index < includedFieldIndexes.length - values.length; index++){
-      values.push("''");
-    }
+    const missingFieldIndexes = includedFieldIndexes.slice(values.length);
+    missingFieldIndexes.forEach((fieldIndex) => {
+      values.push(formatValue('', unquotedFieldIndexes.includes(fieldIndex)));
+    });
   }
 
   const endOfStatement = isEndOfStatement(totalRows, rowNumber, batchSize) ? ";" : ",";
@@ -147,6 +162,7 @@ if (process.env.NODE_ENV === 'test') {
   sqlGenerator.generateInsertStatements = generateInsertStatements;
   sqlGenerator.generateInsertIntoClause = generateInsertIntoClause;
   sqlGenerator.generateInsertLine = generateInsertLine;
+  sqlGenerator.formatValue = formatValue;
   sqlGenerator.isEndOfStatement = isEndOfStatement;
   sqlGenerator.isFirstLineOfStatement = isFirstLineOfStatement;
   sqlGenerator.validBatchSize = validBatchSize;

@@ -177,3 +177,91 @@ describe('Custom delimiter', () => {
   });
 
 });
+
+describe('Per-column value quoting', () => {
+
+  const data = [
+    ['id', 'name'],
+    [1, 'John'],
+    [2, 'Jane']
+  ];
+
+  test('unquoted columns emit bare values, quoted ones keep their quotes', () => {
+    const fields = [
+      { name: 'id', type: 'INT', include: true, quote: false },
+      { name: 'name', type: 'VARCHAR(255)', include: true, quote: true }
+    ];
+
+    const result = sqlGenerator.generateInsertStatements(data, fields, 'users', null);
+
+    expect(result).toBe(
+      '\n\nINSERT INTO "users" VALUES\n\t(1, \'John\'),\n\t(2, \'Jane\');'
+    );
+  });
+
+  test('fields without a quote property stay quoted', () => {
+    const fields = [
+      { name: 'id', type: 'INT', include: true },
+      { name: 'name', type: 'VARCHAR(255)', include: true }
+    ];
+
+    const result = sqlGenerator.generateInsertStatements(data, fields, 'users', null);
+
+    expect(result).toBe(
+      '\n\nINSERT INTO "users" VALUES\n\t(\'1\', \'John\'),\n\t(\'2\', \'Jane\');'
+    );
+  });
+
+  test('an empty value in an unquoted column becomes NULL, not an empty string', () => {
+    const sparse = [
+      ['id', 'name'],
+      ['', 'John']
+    ];
+    const fields = [
+      { name: 'id', type: 'INT', include: true, quote: false },
+      { name: 'name', type: 'VARCHAR(255)', include: true, quote: true }
+    ];
+
+    const result = sqlGenerator.generateInsertStatements(sparse, fields, 'users', null);
+
+    expect(result).toBe('\n\nINSERT INTO "users" VALUES\n\t(NULL, \'John\');');
+  });
+
+  // Trailing values missing from the row are padded; the padding has to respect
+  // each column's own quote setting rather than always emitting ''.
+  test('trailing missing values respect the column quote setting', () => {
+    const ragged = [
+      ['id', 'name', 'score'],
+      [1]
+    ];
+    const fields = [
+      { name: 'id', type: 'INT', include: true, quote: false },
+      { name: 'name', type: 'VARCHAR(255)', include: true, quote: true },
+      { name: 'score', type: 'INT', include: true, quote: false }
+    ];
+
+    const result = sqlGenerator.generateInsertStatements(ragged, fields, 'users', null);
+
+    expect(result).toBe('\n\nINSERT INTO "users" VALUES\n\t(1, \'\', NULL);');
+  });
+
+  test('formatValue', () => {
+    expect(sqlGenerator.formatValue('John', false)).toBe("'John'");
+    expect(sqlGenerator.formatValue(42, true)).toBe('42');
+    expect(sqlGenerator.formatValue('', true)).toBe('NULL');
+    expect(sqlGenerator.formatValue('', false)).toBe("''");
+  });
+
+  test('generateInClausesFromPaste can emit unquoted values', () => {
+    const jsonData = [[1, 2], [3, 4]];
+
+    expect(sqlGenerator.generateInClausesFromPaste(jsonData, null, false)).toEqual([
+      ['1', '2', '3', '4']
+    ]);
+    // defaults to quoted, so existing callers are unaffected
+    expect(sqlGenerator.generateInClausesFromPaste(jsonData, null)).toEqual([
+      ["'1'", "'2'", "'3'", "'4'"]
+    ]);
+  });
+
+});
