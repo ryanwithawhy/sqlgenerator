@@ -19,9 +19,9 @@
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.3/xlsx-0.19.3.tgz"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "NODE_OPTIONS=--no-experimental-webstorage react-scripts start",
+    "build": "NODE_OPTIONS=--no-experimental-webstorage react-scripts build",
+    "test": "NODE_OPTIONS=--no-experimental-webstorage react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
