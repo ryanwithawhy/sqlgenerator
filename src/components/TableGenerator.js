@@ -158,25 +158,25 @@ return (
               <Table size="small" aria-label="a dense table">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Column Number</TableCell>
-                    <TableCell>Column Name</TableCell>
-                    <TableCell>Column Type</TableCell>
-                    <TableCell>Include</TableCell>
-                    <TableCell>Quote Values</TableCell>
+                    <TableCell width="35%">Column Name</TableCell>
+                    <TableCell width="35%">Column Type</TableCell>
+                    <TableCell width="15%">Include</TableCell>
+                    <TableCell width="15%">Quote Values</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {fields.map((field, index) => (
                     <TableRow key={field.index}>
-                      <TableCell>{field.index + 1}</TableCell>
                       <TableCell>
                         <TextField
+                          fullWidth
                           value={field.name}
                           onChange={(e) => handleFieldChange(index, 'name', e.target.value)}
                         />
                       </TableCell>
                       <TableCell>
                         <TextField
+                          fullWidth
                           value={field.type}
                           onChange={(e) => handleFieldChange(index, 'type', e.target.value)}
                         />
