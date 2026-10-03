@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 // import * as XLSX from 'xlsx';
 import { TextField, Button, Box, Tabs, Tab, Container, Typography, Grid, FormControl } from '@mui/material';
-import { Link } from "react-router-dom";
+import Notice from '../../components/Notice';
 
 function AlterStatementsGenerator() {
   const [excelData, setExcelData] = useState('');
@@ -143,10 +143,7 @@ function AlterStatementsGenerator() {
       >
         Generate
       </Button>
-      <Typography variant='body1' sx={{mt: '16px'}}>
-      Note: All operations are performed client-side. No data is sent to a server so your data remains private and secure.
-      Checkout the <Link to="https://github.com/ryanwith/sqlgenerator">github repository</Link> if you want to verify or contribute.
-    </Typography>
+      <Notice />
     </Container>
   );
 }

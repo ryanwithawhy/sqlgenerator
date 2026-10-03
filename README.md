@@ -2,7 +2,7 @@
 
 This project makes it easy to move excel, CSV, JSON, and other data into your data warehouse so you can analyze adhoc data sets with less data prep.  Simply upload a file or paste what you need into SQLGeneator and it will turn it into the SQL you need to either filter your existing data or ingest it directly into your warehouse.  Great for when you need to run adhoc analyses on data that's not natively available in a single warehouse.
 
-It's hosted at [sqlgenerator.io](https://www.sqlgenerator.io) and runs everything client-side, so you can use this tool without sharing your data.  However, if you'd like to clone it and host it on your own tools for added safety, please provide attribution to the project on [GitHub](https://github.com/ryanwaldorf/sqlgenerator).
+It's hosted at [sqlgenerator.dev](https://sqlgenerator.dev) and runs everything client-side, so you can use this tool without sharing your data.  However, if you'd like to clone it and host it on your own tools for added safety, please provide attribution to the project on [GitHub](https://github.com/ryanwithawhy/sqlgenerator).
 
 Additionally the initial structure was developed using [plandex](https://plandex.ai/), an open source, terminal-based AI coding engine that helps you complete large tasks, work around bad output, and maximize productivity.
 
@@ -10,11 +10,11 @@ Additionally the initial structure was developed using [plandex](https://plandex
 
 This currently provides three options:
 
-1/ [In-Clause Generator](https://github.com/ryanwaldorf/sqlgenerator/blob/main/src/pages/InClauseGenerator.js).  Generates SQL in-clauses from pasted data.  Great when you have a CSV containing identifiers like customer or order IDs that you want to filter an existing table on.
+1/ [In-Clause Generator](https://github.com/ryanwithawhy/sqlgenerator/blob/main/src/pages/InClauseGenerator.js).  Generates SQL in-clauses from pasted data.  Great when you have a CSV containing identifiers like customer or order IDs that you want to filter an existing table on.
 
-2/ [Excel to SQL](https://github.com/ryanwaldorf/sqlgenerator/blob/main/src/pages/TableGeneratorFromExcel.js).  Generates a SQL CREATE TABLE and SQL INSERT INTO statements from uploaded spreadsheet files like excel, CSV, and TSV and pasted data.  Great for when you need to ingest and join data sets into a warehouse for adhoc analyses.
+2/ [Excel to SQL](https://github.com/ryanwithawhy/sqlgenerator/blob/main/src/pages/TableGeneratorFromExcel.js).  Generates a SQL CREATE TABLE and SQL INSERT INTO statements from uploaded spreadsheet files like excel, CSV, and TSV and pasted data.  Great for when you need to ingest and join data sets into a warehouse for adhoc analyses.
 
-3/ [JSON to SQL](https://github.com/ryanwaldorf/sqlgenerator/blob/main/src/pages/TableGeneratorFromJSON.js).  Generates SQL CREATE TABLE and SQL INSERT INTO statements from uploaded JSON files and pasted JSON.  Great for when you need to ingest and join data sets into a warehouse for adhoc analyses.  
+3/ [JSON to SQL](https://github.com/ryanwithawhy/sqlgenerator/blob/main/src/pages/TableGeneratorFromJSON.js).  Generates SQL CREATE TABLE and SQL INSERT INTO statements from uploaded JSON files and pasted JSON.  Great for when you need to ingest and join data sets into a warehouse for adhoc analyses.  
 
 # How to run this yourself
 

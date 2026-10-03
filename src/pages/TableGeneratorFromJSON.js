@@ -6,7 +6,7 @@ import SQLDisplay from '../components/SQLDisplay';
 import CopyToClipboard from '../components/CopyToClipboard';
 import PasteDataModal from '../components/PasteDataModal';
 import sqlGenerator from '../utils/sqlGenerator';
-import { Link } from "react-router-dom";
+import Notice from '../components/Notice';
 
 import { Container, Typography, Grid, Box, InputLabel, Select, FormControl, MenuItem, TextField, 
   Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Checkbox, Button } from '@mui/material';
@@ -191,10 +191,7 @@ return (
           </Box>
         </Grid>
     </Grid>
-    <Typography variant='body1' sx={{mt: '16px'}}>
-      Note: All operations are performed client-side. No data is sent to a server so your data remains private and secure.
-      Checkout the <Link to="https://github.com/ryanwith/sqlgenerator">github repository</Link> if you want to verify or contribute.
-    </Typography>
+      <Notice />
 
   </Container>
 );
