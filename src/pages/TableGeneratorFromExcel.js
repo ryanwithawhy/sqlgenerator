@@ -19,6 +19,7 @@ function TableGeneratorFromExcel() {
   const [tableType, setTableType] = useState('TEMP');
   const [tableName, setTableName] = useState('table_name');
   const [batchSize, setBatchSize] = useState("");
+  const [delimiter, setDelimiter] = useState('"');
   const [providedData, setProvidedData] = useState(null);
   const [fields, setFields] = useState([]);
   const [disableButtons, setDisableButtons] = useState(true);
@@ -40,6 +41,7 @@ function TableGeneratorFromExcel() {
     if (name === 'tableType') setTableType(value);
     if (name === 'tableName') setTableName(value);
     if (name === 'batchSize') setBatchSize(value);
+    if (name === 'delimiter') setDelimiter(value);
   };
 
   const handleSQLChange = (event) => {
@@ -73,11 +75,11 @@ function TableGeneratorFromExcel() {
 
   useEffect(() => {
     if (providedData ) {
-      const allStatements = generateCreateAndInsertStatements(providedData, fields, tableName, tableType, batchSize);
+      const allStatements = generateCreateAndInsertStatements(providedData, fields, tableName, tableType, batchSize, delimiter);
       const newSQL = allStatements.join("");
       setSQL(newSQL);
     }
-  }, [providedData, tableName, tableType, batchSize, fields]);
+  }, [providedData, tableName, tableType, batchSize, delimiter, fields]);
 
 return (
   <Container>
@@ -106,7 +108,7 @@ return (
         </Box>
         <Box mt={2}>
           <Grid container spacing={2}>
-            <Grid item sm={4} xs={12}>
+            <Grid item sm={3} xs={12}>
               <FormControl fullWidth>
                 <InputLabel id="table-type">Table Type</InputLabel>
                 <Select
@@ -122,7 +124,7 @@ return (
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item sm={4} xs={12}>
+            <Grid item sm={3} xs={12}>
               <FormControl fullWidth>
                 <TextField
                   id="table-name"
@@ -133,7 +135,7 @@ return (
                 />
               </FormControl>
             </Grid>
-            <Grid item sm={4} xs={12}>
+            <Grid item sm={3} xs={12}>
               <FormControl fullWidth>
                 <TextField
                   id="batch-size"
@@ -141,6 +143,17 @@ return (
                   type="number"
                   name='batchSize'
                   value={batchSize}
+                  onChange={handleSQLCriteriaChange}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item sm={3} xs={12}>
+              <FormControl fullWidth>
+                <TextField
+                  id="delimiter"
+                  label="Delimiter"
+                  name='delimiter'
+                  value={delimiter}
                   onChange={handleSQLCriteriaChange}
                 />
               </FormControl>

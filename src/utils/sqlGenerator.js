@@ -1,7 +1,7 @@
-const generateCreateAndInsertStatements = (data, fields, tableName, tableType, batchSize) => {
+const generateCreateAndInsertStatements = (data, fields, tableName, tableType, batchSize, delimiter = '"') => {
   return [
-    generateCreateTableSQL(fields, tableName, tableType),
-    generateInsertStatements(data, fields, tableName, batchSize)
+    generateCreateTableSQL(fields, tableName, tableType, delimiter),
+    generateInsertStatements(data, fields, tableName, batchSize, delimiter)
   ].flat()
 }
 
@@ -16,13 +16,13 @@ const generateInClausesFromPaste = (jsonData, batchSize = null) => {
   return chunkedDataPoints;
 };
 
-const generateFullInClause = (chunkedDataPoints, notIn = false, attributeName = 'column_name') => {
+const generateFullInClause = (chunkedDataPoints, notIn = false, attributeName = 'column_name', delimiter = '"') => {
   // console.log(chunkedDataPoints)
   const inStatement = notIn ? 'NOT IN (' : 'IN (';
   const statements = chunkedDataPoints.map((chunk, i) => {
     const whereOrOr = i===0 ? '(\n\t' : 'OR '; 
     const formattedData = `\n\t\t${chunk.join(',\n\t\t')}\n\t)\n`
-    return `${whereOrOr}"${attributeName}" ${inStatement} ${formattedData}`
+    return `${whereOrOr}${delimiter}${attributeName}${delimiter} ${inStatement} ${formattedData}`
   })
   return `${statements.join('\n')})`;
 }
@@ -38,21 +38,21 @@ function breakIntoChunks(allDataPoints, batchSize) { // Changed from generator f
 }
 
 
-const generateCreateTableSQL = (fields, tableName, tableType) => {
+const generateCreateTableSQL = (fields, tableName, tableType, delimiter = '"') => {
   const columns = fields
     .filter(field => field.include === true)
-    .map((field) => `"${field.name}" ${field.type}`).join(', ');
-  const createTableSQL = `CREATE ${tableType === 'TEMP' ? "TEMP " : ""}TABLE "${tableName}" (${columns});`;
+    .map((field) => `${delimiter}${field.name}${delimiter} ${field.type}`).join(', ');
+  const createTableSQL = `CREATE ${tableType === 'TEMP' ? "TEMP " : ""}TABLE ${delimiter}${tableName}${delimiter} (${columns});`;
   return createTableSQL;
 }
 
-const generateInsertStatements = (data, fields, tableName, batchSize) => {
+const generateInsertStatements = (data, fields, tableName, batchSize, delimiter = '"') => {
   const rows = data.slice(1);
   console.log('rows')
   console.log(rows)
   // removes fields where index != true
   const includedFieldIndexes = fields.map((field, index) => field.include === true ? index : null).filter((index) => index !== null);
-  const insertIntoClause = generateInsertIntoClause(tableName);
+  const insertIntoClause = generateInsertIntoClause(tableName, delimiter);
   const insertStatements = rows.map((row, rowNumber) => {
     return generateInsertLine(insertIntoClause, includedFieldIndexes, row, rows.length, rowNumber, batchSize)
   });
@@ -63,8 +63,8 @@ const generateInsertStatements = (data, fields, tableName, batchSize) => {
 //   return null
 // }
 
-const generateInsertIntoClause = (tableName) => {
-  return `\n\nINSERT INTO "${tableName}" VALUES`
+const generateInsertIntoClause = (tableName, delimiter = '"') => {
+  return `\n\nINSERT INTO ${delimiter}${tableName}${delimiter} VALUES`
 }
 
 const generateInsertLine = (insertIntoClause, includedFieldIndexes, row, totalRows, rowNumber, batchSize) => {

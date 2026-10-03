@@ -10,6 +10,7 @@ function InClauseGenerator() {
   const [parsedData, setParsedData] = useState([]);
   const [inClause, setInClause] = useState('');
   const [columnName, setColumnName] = useState('column_name');
+  const [delimiter, setDelimiter] = useState('"');
   const [notIn, setNotIn] = useState(false);
   const [batchSize, setBatchSize] = useState(0);
   const [currentTab, setCurrentTab] = useState(0); // 0 for Pasted Data, 1 for In Clause
@@ -34,7 +35,7 @@ function InClauseGenerator() {
     const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
     setParsedData(jsonData);
     setUnformattedClauses(generateInClausesFromPaste(jsonData, batchSize));
-    setInClause(generateFullInClause(unformattedClauses, notIn, columnName));
+    setInClause(generateFullInClause(unformattedClauses, notIn, columnName, delimiter));
     setCurrentTab(1);
   };
 
@@ -47,10 +48,10 @@ function InClauseGenerator() {
 
   useEffect(() => {
     if (unformattedClauses.length !== 0) {
-      setInClause(generateFullInClause(unformattedClauses, notIn, columnName));
+      setInClause(generateFullInClause(unformattedClauses, notIn, columnName, delimiter));
       setCurrentTab(1);
     }
-  }, [unformattedClauses, notIn, columnName]);
+  }, [unformattedClauses, notIn, columnName, delimiter]);
 
   useEffect(() => {
     if (excelData){
@@ -63,6 +64,7 @@ function InClauseGenerator() {
   const handleSQLCriteriaChange = (event) => {
     const { name, value } = event.target;
     if (name === 'columnName') setColumnName(value);
+    if (name === 'delimiter') setDelimiter(value);
     if (name === 'notIn') setNotIn(value === 'EXCLUDE' ? true : false);
     if (name === 'batchSize') setBatchSize(value);
   };
@@ -119,7 +121,7 @@ function InClauseGenerator() {
       <Grid id='sql-criteria' item xs={12}>
         <Box mt={2}>
           <Grid container spacing={2}>
-          <Grid item sm={4} xs={12}>
+          <Grid item sm={3} xs={12}>
               <FormControl fullWidth>
                 <TextField
                   labelId="column-name-label"
@@ -131,7 +133,18 @@ function InClauseGenerator() {
                 />
               </FormControl>
             </Grid>
-            <Grid item sm={4} xs={12}>
+            <Grid item sm={3} xs={12}>
+              <FormControl fullWidth>
+                <TextField
+                  id="delimiter"
+                  label="Delimiter"
+                  name='delimiter'
+                  value={delimiter}
+                  onChange={handleSQLCriteriaChange}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item sm={3} xs={12}>
               <FormControl fullWidth>
                 <InputLabel id="not-in">Include or Exclude</InputLabel>
                 <Select
@@ -147,7 +160,7 @@ function InClauseGenerator() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item sm={4} xs={12}>
+            <Grid item sm={3} xs={12}>
               <FormControl fullWidth>
                 <TextField
                   id="batch-size"

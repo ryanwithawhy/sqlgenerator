@@ -125,3 +125,55 @@ describe('SQL Generator Functions', () => {
   });
 
 });
+
+describe('Custom delimiter', () => {
+
+  const fields = [
+    { name: 'id', type: 'INT', include: true },
+    { name: 'name', type: 'VARCHAR(255)', include: true }
+  ];
+
+  test('generateCreateTableSQL wraps identifiers in a backtick delimiter', () => {
+    const result = sqlGenerator.generateCreateTableSQL(fields, 'users', 'TEMP', '`');
+
+    expect(result).toBe('CREATE TEMP TABLE `users` (`id` INT, `name` VARCHAR(255));');
+  });
+
+  test('generateCreateAndInsertStatements delimits identifiers but not row values', () => {
+    const data = [
+      ['id', 'name'],
+      [1, 'John']
+    ];
+
+    const result = sqlGenerator.generateCreateAndInsertStatements(data, fields, 'users', 'TEMP', 1, '`');
+
+    expect(result).toEqual([
+      'CREATE TEMP TABLE `users` (`id` INT, `name` VARCHAR(255));',
+      '\n\nINSERT INTO `users` VALUES\n\t(\'1\', \'John\');'
+    ]);
+  });
+
+  test('generateFullInClause delimits the column name but not the values', () => {
+    const chunkedDataPoints = [["'1'", "'2'"]];
+
+    const result = sqlGenerator.generateFullInClause(chunkedDataPoints, false, 'id', '`');
+
+    expect(result).toBe('(\n\t`id` IN ( \n\t\t\'1\',\n\t\t\'2\'\n\t)\n)');
+  });
+
+  test('an empty delimiter produces unquoted identifiers', () => {
+    const result = sqlGenerator.generateCreateTableSQL(fields, 'users', 'TEMP', '');
+
+    expect(result).toBe('CREATE TEMP TABLE users (id INT, name VARCHAR(255));');
+  });
+
+  // The delimiter is unvalidated free text, so a single quote is passed through
+  // verbatim. The resulting SQL is invalid in most dialects -- that is the
+  // documented behavior, not a bug to "fix" here.
+  test('a single-quote delimiter is passed through verbatim', () => {
+    const result = sqlGenerator.generateCreateTableSQL(fields, 'users', 'TEMP', "'");
+
+    expect(result).toBe("CREATE TEMP TABLE 'users' ('id' INT, 'name' VARCHAR(255));");
+  });
+
+});

@@ -8,8 +8,7 @@ function AlterStatementsGenerator() {
   const [alterStatements, setAlterStatements] = useState('');
   const [alterStatementBeginning, setAlterStatementBeginning] = useState('ALTER TABLE');
   const [alterStatementEnd, setAlterStatementEnd] = useState('REPLICA IDENTITY FULL');
-  const [beginningDelimiter, setBeginningDelimiter] = useState('"');
-  const [endDelimiter, setEndDelimiter] = useState('"');
+  const [delimiter, setDelimiter] = useState('"');
   const [currentTab, setCurrentTab] = useState(0); // 0 for Pasted Data, 1 for Alter Statements
 
   const handleTabChange = (event, newValue) => {
@@ -23,7 +22,7 @@ function AlterStatementsGenerator() {
   const generateAlterStatements = () => {
     const rows = excelData.trim().split('\n').map(row => row.split('\t'));
     const statements = rows.map(row => {
-      const formattedColumns = row.map(col => `${beginningDelimiter}${col}${endDelimiter}`).join('.');
+      const formattedColumns = row.map(col => `${delimiter}${col}${delimiter}`).join('.');
       return `${alterStatementBeginning} ${formattedColumns} ${alterStatementEnd};`;
     }).join('\n');
     setAlterStatements(statements);
@@ -39,11 +38,8 @@ function AlterStatementsGenerator() {
       case 'alterStatementEnd':
         setAlterStatementEnd(value);
         break;
-      case 'beginningDelimiter':
-        setBeginningDelimiter(value);
-        break;
-      case 'endDelimiter':
-        setEndDelimiter(value);
+      case 'delimiter':
+        setDelimiter(value);
         break;
       default:
         break;
@@ -54,7 +50,7 @@ function AlterStatementsGenerator() {
     <Container>
       <Typography variant="h1">Alter Statements Generator</Typography>
       <Typography variant="body1" style={{ marginTop: '4px' }}>
-        Paste Excel data here and generate SQL ALTER statements with custom delimiters and formatting.
+        Paste Excel data here and generate SQL ALTER statements with a custom delimiter and formatting.
       </Typography>
       <Box>
         <Tabs 
@@ -116,19 +112,9 @@ function AlterStatementsGenerator() {
         <Grid item xs={6}>
           <FormControl fullWidth>
             <TextField
-              label="Beginning Delimiter"
-              name="beginningDelimiter"
-              value={beginningDelimiter}
-              onChange={handleSQLCriteriaChange}
-            />
-          </FormControl>
-        </Grid>
-        <Grid item xs={6}>
-          <FormControl fullWidth>
-            <TextField
-              label="End Delimiter"
-              name="endDelimiter"
-              value={endDelimiter}
+              label="Delimiter"
+              name="delimiter"
+              value={delimiter}
               onChange={handleSQLCriteriaChange}
             />
           </FormControl>
